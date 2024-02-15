@@ -1,0 +1,15 @@
+{
+  "name": "motus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test_motus"
+  },
+  "author": "Matteo Couchoud",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "seedrandom": "^3.0.5"
+  }
+}
