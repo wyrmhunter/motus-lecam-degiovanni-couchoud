@@ -4,9 +4,6 @@ const fs = require('fs');
 const seedrandom = require('seedrandom');
 const { get } = require('http');
 
-//on importe ./API/ports.js
-const { ports } = require('./API/port.js');
-
 //Définition du port sur lequel lancer l'application 
 const port = process.env.PORT || 3000;
 // Path vers le fichier de mots français :
