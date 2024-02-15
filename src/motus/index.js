@@ -1,9 +1,14 @@
 const express = require('express')
 const app = express()
-const port = 3000
 const fs = require('fs');
 const seedrandom = require('seedrandom');
 const { get } = require('http');
+
+//on importe ./API/ports.js
+const { ports } = require('./API/port.js');
+
+//Définition du port sur lequel lancer l'application 
+const port = process.env.PORT || 3000;
 // Path vers le fichier de mots français :
 let mots = './data/liste_francais_utf8.txt';
 
@@ -11,8 +16,6 @@ let mots = './data/liste_francais_utf8.txt';
 let motsArray = fs.readFileSync(mots).toString().split("\n");
 
 // On prend la date du jour
-
-
 function getWordOfTheDay() {
     let date = new Date();
     let jour = date.getDate();
@@ -39,7 +42,7 @@ function wordLength() {
 
 }
 
-
+// PATHS
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
@@ -91,3 +94,8 @@ app.get('/validate', (req, res) => {
 
 })
 
+
+app.get('/port', (req, res) => {
+    res.send(ports.getPortAndOS().toString());
+  }
+)
