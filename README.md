@@ -5,3 +5,5 @@ Le but du projet est de créer une application Motus fonctionnelle, avec :
 - ses parties front/back,
 - un système de scores,
 - un système d'authentification.
+
+![alt text](./img/motus_logo.png)
