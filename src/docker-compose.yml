@@ -1,0 +1,35 @@
+version: '3'
+
+networks:
+  motus-network:
+    external:
+      name: 'motus_network'
+
+
+services:
+  redis_score:
+    image: redis
+    container_name: redis_score
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=redis
+    networks:
+      - motus-network
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./score/redis_score/data:/data
+
+  redis_auth:
+    image: redis
+    container_name: redis_auth
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=redis
+    networks:
+      - motus-network
+    ports:
+      - "6380:6380"
+    volumes:
+      - ./auth/redis_auth/data:/data
+
