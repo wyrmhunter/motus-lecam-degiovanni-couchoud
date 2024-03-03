@@ -17,9 +17,12 @@ app.use(session({
   secret: 's3Cur3',
   name: 'sessionId',
   _expires: expiryDate,
+  store: new (require("session-express-redis"))({
+    host: "localhost", // Replace with your Redis host
+    port: 6380, // Replace with your Redis port
+  }),
 
 }))
-  
 
 app.use(express.static('public'));
 
@@ -69,28 +72,75 @@ client.on("error", (err) => {
 
 
 // Route pour s'enregistrer
-app.get('/register', (req, res) => {
-  let username = "maurice";
-  let password = "1234";
-  
-
-  //On cherche si l'username est déjà pris
-  client.hGetAll(username, function(err, obj) {
-    if (obj) {
-      res.json({error: "Username already taken"});
-    } else {
-      //On enregistre le nouvel utilisateur
-      client.hSet(username, {password: password}, function(err, reply) {
-        if (reply) {
-          res.json({success: "User created"});
+app.post('/register', (req, res) => {
+    //On récupère le json
+    let body = '';
+    req.on('data', chunk => {
+        body += chunk.toString();
+    });
+    console.log("Registering user");
+    req.on('end', async () => {
+        //On parse le json
+        let user = JSON.parse(body);
+        console.log(user);
+        
+        let userExists = await client.hExists('users', user.username);
+        console.log(userExists);
+        if (userExists == 1) {
+          console.log("User already exists");
+            res.status(409).send("User already exists");
         } else {
-          res.json({error: "Error creating user"});
+            await client.hSet('users', user.username, user.password)
+            .then(() => {
+              console.log("User created");
+              //On créé une session pour l'utilisateur
+              req.session.username = user.username;
+              token = generateToken();
+              req.session.token = token;
+              res.send(302,"User created")
+            });
+            
+            
+           
         }
-      });
+    });
+});
 
-    }
-  }
-  );
-  
+function generateToken() {
+  return Math.random().toString(36).substring(7);
+}
 
+
+// Route pour se connecter
+app.post('/login', (req, res) => {
+    //On récupère le json
+    let body = '';
+    req.on('data', chunk => {
+        body += chunk.toString();
+    });
+    console.log("Logging in");
+    req.on('end', async () => {
+        //On parse le json
+        let user = JSON.parse(body);
+        console.log(user);
+        let userExists = await client.hExists('users', user.username);
+        console.log(userExists);
+        if (userExists == 0) {
+            console.log("User does not exist");
+            res.status(401).send("User does not exist");
+        } else {
+            let password = await client.hGet('users', user.username);
+            console.log(password);
+            if (password == user.password) {
+                console.log("User logged in");
+                req.session.username = user.username;
+                token = generateToken();
+                req.session.token = token;
+                res.status(302).send("User logged in");
+            } else {
+                console.log("Wrong password");
+                res.status(401).send("Wrong password");
+            }
+        }
+    });
 });

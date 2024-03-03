@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap">
   <link href="https://fonts.googleapis.com/css2?family=Nabla&display=swap" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+
 </head>
 <body>
   <div class="main-header">
@@ -23,10 +25,13 @@
         <input type="text" id="username" name="username" required>
         <label for="password">Mot de passe</label>
         <input type="password" id="password" name="password" required>
-        <button type="submit" onclick="login()">Se connecter</button>
+        <button class="form-submit" onclick="login()">Se connecter</button>
       </form>
       <p>Pas encore de compte ? <button id="showRegisterForm">Inscrivez-vous</button></p>
     </div>
+
+
+    
     <div id="registerForm" class="form hide">
       <h2>Inscription</h2>
       <form id="register">
@@ -35,7 +40,7 @@
         <input type="text" id="newUsername" name="newUsername" required>
         <label for="newPassword">Nouveau mot de passe</label>
         <input type="password" id="newPassword" name="newPassword" required>
-        <button type="submit" onclick="register()">S'inscrire</button>
+        <button class="form-submit" onclick="register()">S'inscrire</button>
       </form>
       <p>Déjà un compte ? <button id="showLoginForm">Connectez-vous</button></p>
     </div>

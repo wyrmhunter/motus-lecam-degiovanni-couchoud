@@ -9,19 +9,14 @@ const port = process.env.PORT || 3000;
 const auth_adress = "http://localhost:5001";
 
 const session = require('express-session')
-const expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
-app.set('trust proxy', 1) // trust first proxy
-app.use(session({
-  secret: 's3Cur3',
-  name: 'sessionId',
-  _expires: expiryDate,
 
-}))
 
 //Si la session ne possède pas 'username' ni 'token', on renvoie un message d'erreur 302 (redirection) vers auth_adress
 //On le redirige avec les paramètres openID {clientid, scope, redirect_uri}
 app.use((req, res, next) => {
+  console.log(req.session);
     if (!req.session.username || !req.session.token) {
+        console.log("Redirecting to auth server");
         res.redirect(302, auth_adress + '/?clientid=1234&scope=openid&redirect_uri=http://localhost:3000');
     } else {
         next();
