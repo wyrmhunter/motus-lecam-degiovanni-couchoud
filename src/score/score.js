@@ -73,24 +73,31 @@ app.get('/session', (req, res) => {
 
 // si l'on va sur /, on renvoie le fichier score.html
 app.get('/', (req, res) => {
-  console.log("score.html");
   res.sendFile(__dirname + '/public/score.html');
 })
 
 // chemin /getscore pour renvoyer le score du joueur stocké sur Redis 'users'
+app.get('/getscore', (req, res) => {
+  console.log("getscore");
+  //On récupère le score du joueur actuel
 
+  res.send("getscore");
+});
 
 // chemin /setscore pour enregistrer sur Redis le score du joueur actuel
+app.get('/setscore', (req, res) => {
+  console.log("setscore");
+  //On enregistre le score du joueur actuel
 
+  res.send("setscore");
+});
 
 // chemin /getall pour renvoyer tous les scores des utilisateurs stockés dans 'users'
 app.get('/getall', (req, res) => {
+  console.log("getall");
   //On récupère les scores de tous les joueurs
-  client.hGetAll('users', (err, obj) => {
-    //On envoie les scores
-    console.log(obj);
-    res.send(obj);
-  });
+
+  res.send("getall");
 });
 
 app.get('/port', (req, res) => {

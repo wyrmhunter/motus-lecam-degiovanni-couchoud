@@ -26,9 +26,7 @@ h1{
     
 }
 
-.hide {
-    display: none;
-}
+
 
 .motus-form{
     background-color: rgb(36, 43, 51);
@@ -181,7 +179,9 @@ h1{
 }
 
 
-
+.hide {
+    display: none;
+}
 
 
 /*Animation des lettres de classe motus-titre-<numéro>*/
