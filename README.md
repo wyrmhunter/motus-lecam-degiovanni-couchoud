@@ -1,22 +1,19 @@
 ![alt text](./img/motus_logo.png)
 
-# Repository pour le projet d'application Motus
+## README - Micro-service Motus
 Par Léonie LE CAM, Quentin DE GIOVANNI, Matteo COUCHOUD
 Dans le cadre :
 - Module Microservice
 - 3e année de formation d'Ingénieur à CY-TECH Cergy
 - Année universitaire 2023-2024
 
+**Description du projet**
+
+Ce projet implémente le jeu de motus en tant que micro-service. Il s'agit d'un projet pédagogique réalisé dans le cadre d'un cours sur les micro-services.
 Le but du projet est de créer une application Motus fonctionnelle, avec : 
 - ses parties front/back,
 - un système de scores,
 - un système d'authentification.
-
-## README - Micro-service Motus
-
-**Description du projet**
-
-Ce projet implémente le jeu de motus en tant que micro-service. Il s'agit d'un projet pédagogique réalisé dans le cadre d'un cours sur les micro-services.
 
 **Technologies utilisées**
 
@@ -48,14 +45,6 @@ Le micro-service est accompagné d'une série de tests unitaires qui permettent 
 **Déploiement**
 
 Le micro-service peut être déployé sur n'importe quel serveur web compatible avec Python et Flask.
-
-**Licence**
-
-Ce projet est sous licence MIT.
-
-**Contributeurs**
-
-* **Matteo Couchoud, Léonie Le Cam, Quentin de Giovanni**
 
 **Remerciements**
 
