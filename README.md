@@ -48,4 +48,4 @@ Le micro-service peut être déployé sur n'importe quel serveur web compatible 
 
 **Remerciements**
 
-* Simon Gomez pour les tutoriels sur les micro-services ([https://scholar.google.com/citations?user=QkbzPB4AAAAJ&hl=en](https://scholar.google.com/citations?user=QkbzPB4AAAAJ&hl=en))
+* Simon Gomez pour nous avoir ouvert au domaine des microservices et pour la qualité de son enseignement. ([https://simongomezuniv.github.io/](https://simongomezuniv.github.io/))
