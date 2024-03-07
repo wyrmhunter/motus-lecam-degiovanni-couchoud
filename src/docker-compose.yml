@@ -7,9 +7,9 @@ networks:
 
 
 services:
-  redis_score:
+  redis_motus:
     image: redis
-    container_name: redis_score
+    container_name: redis_motus
     environment:
       - REDIS_HOST=redis
       - REDIS_PASSWORD=redis
@@ -19,15 +19,6 @@ services:
       - "6379:6379"
 
 
-  redis_auth:
-    image: redis
-    container_name: redis_auth
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PASSWORD=redis
-    networks:
-      - motus-network
-    ports:
-      - "6380:6380"
+
 
 

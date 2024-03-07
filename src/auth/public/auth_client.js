@@ -25,11 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         register();
     });
+
+    
+
   });
 
 const adresse = "http://localhost:5001";
 const game_adress = "http://localhost:3000";
-
+const notif_area = document.getElementById("notif-area");
 
 //Fonction pour se connecter
 function login() {
@@ -49,9 +52,20 @@ function login() {
     })
     // On attend la réponse du serveur
     .then(response => {
-        if (response.status == 200 || response.status == 201) {
+        if (response.status == 200) {
+            //notification
+            notif_area.classList.remove("notif-bad");
+            notif_area.classList.add("notif-good");
+            notif_area.innerHTML = "Connexion réussie";
+            console.log("Connexion réussie");
+            //On redirige vers la page de jeu
+            document.location.href = game_adress;
 
         } else {
+            //notification
+            notif_area.classList.remove("notif-good");
+            notif_area.classList.add("notif-bad");
+            notif_area.innerHTML = "Identifiants incorrects";
             console.log("User not found");
         }
     })
@@ -80,9 +94,9 @@ function register() {
         body: JSON.stringify({username: username, password: password})
     })
     .then(response => {
-        if (response.status == 201) {
+        if (response.status == 201 ) {
             console.log("User created");
-            login();
+            document.location.href = game_adress;
         } else {
             console.log("User already exists");
         }

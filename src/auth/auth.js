@@ -3,28 +3,71 @@ const app = express()
 const fs = require('fs');
 const { get } = require('http');
 const { json } = require('express');
+const cors = require('cors');
+const redis = require('redis');
+const RedisStore = require("connect-redis").default;
 
 
 //Définition du port sur lequel lancer l'application 
 const port = process.env.PORT || 5001;
 
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5001', 'http://localhost:5001/']; 
 
+const corsOptions = {
+  origin: allowedOrigins, 
+  credentials: true, 
+  optionsSuccessStatus: 200, 
+};
+
+app.use(cors(corsOptions));
 
 const session = require('express-session')
-const expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
-app.set('trust proxy', 1) // trust first proxy
-app.use(session({
-  secret: 's3Cur3',
-  name: 'sessionId',
-  _expires: expiryDate,
-  store: new (require("session-express-redis"))({
-    host: "localhost", // Replace with your Redis host
-    port: 6380, // Replace with your Redis port
-  }),
 
-}))
+
+
 
 app.use(express.static('public'));
+
+//On contacte le conteneur REDIS
+const client = redis.createClient({
+  host: '0.0.0.0', 
+  port: 6379,      
+});
+(async () => {
+  //On attend que la connexion soit établie
+  await client.connect();
+})();
+console.log("Attempting to connect to redis");
+client.on('connect', () => {
+    console.log('Connected!');
+});
+// Log any error that may occur to the console
+client.on("error", (err) => {
+    console.log(`Error:${err}`);
+});
+
+app.set('trust proxy', 1) // trust first proxy
+const expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+app.use(session({
+  store: new RedisStore({ client: client }),
+  secret: 's3Cur3',
+  name: 'userSession',
+  saveUninitialized: false,
+  _expires: expiryDate,
+  resave: false,
+  cookie: { maxAge: expiryDate, secure : false, httpOnly: true, domain: 'localhost', path: '/'}
+}))
+
+
+
+
+//api /session qui renvoie les valeurs de la session en json
+app.get('/session', (req, res) => {
+  //on parse la session en json
+  let session = JSON.stringify(req.session);
+  //on envoie la session
+  res.send(session);
+})
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/auth.html');
@@ -36,38 +79,10 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-// Route pour obtenir toutes les variables de session
-app.get('/session', (req, res) => {
-    var sessionVariables = req.session;
-    console.log(sessionVariables);
-    res.json(sessionVariables);
-  });
 
 
 
   
-//On contacte le conteneur REDIS
-const redis = require('redis');
-// Configuration de la connexion à Redis
-const client = redis.createClient({
-  host: '0.0.0.0', 
-  port: 6380,      
-});
-
-(async () => {
-  //On attend que la connexion soit établie
-  await client.connect();
-})();
-
-console.log("Attempting to connect to redis");
-client.on('connect', () => {
-    console.log('Connected!');
-});
-
-// Log any error that may occur to the console
-client.on("error", (err) => {
-    console.log(`Error:${err}`);
-});
 
 
 
@@ -91,13 +106,13 @@ app.post('/register', (req, res) => {
             res.status(409).send("User already exists");
         } else {
             await client.hSet('users', user.username, user.password)
-            .then(() => {
+            .then(async () => {
               console.log("User created");
               //On créé une session pour l'utilisateur
               req.session.username = user.username;
-              token = generateToken();
-              req.session.token = token;
-              res.send(302,"User created")
+              //On sauve de manière asynchrone la session
+              await saveSession(req);
+              res.send(201,"User created")
             });
             
             
@@ -106,13 +121,23 @@ app.post('/register', (req, res) => {
     });
 });
 
+//Token generation
 function generateToken() {
   return Math.random().toString(36).substring(7);
 }
 
+//méthode pour enregistrer la session dans Redis
+async function saveSession(req, res) {
+  //On génère un token pour la session
+  let token = generateToken();
+  //On sauve la session dans Redis
+  await client.set(token, JSON.stringify(req.session));
+  
+}
+
 
 // Route pour se connecter
-app.post('/login', (req, res) => {
+app.post('/login',(req, res) => {
     //On récupère le json
     let body = '';
     req.on('data', chunk => {
@@ -134,9 +159,13 @@ app.post('/login', (req, res) => {
             if (password == user.password) {
                 console.log("User logged in");
                 req.session.username = user.username;
-                token = generateToken();
-                req.session.token = token;
-                res.status(302).send("User logged in");
+
+                //On sauve de manière asynchrone la session
+                await saveSession(req);
+
+                console.log(req.session);
+                //sends response
+                res.status(200).send("User logged in");
             } else {
                 console.log("Wrong password");
                 res.status(401).send("Wrong password");

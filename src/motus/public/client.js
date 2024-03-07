@@ -4,21 +4,39 @@ if (document.cookie.indexOf("essais") == -1) {
 }
 */
 const adresse = "http://localhost:3000";
+const auth_adress = "http://localhost:5001";
+const score_adress = "http://localhost:4001";
 
 let won = false;
 const notif_area = document.getElementsByClassName("motus-notif")[0];
 let essais = 5;
 
+//On fait en sorte que les boutons de déconnexion et score sont cachés
+document.getElementById("logout-button").classList.add("hide");
+document.getElementById("scores-button").classList.add("hide");
 
-
-
-//On met dans les cookies du navigateur le nombre d'essais sauf si il y est déjà
+//On appelle /session pour savoir si le joueur est connecté + afficher le nom du joueur
+fetch(adresse + "/session").then(response => response.text()).then(data => {
+    console.log(data);
+    data = JSON.parse(data);
+    if (data["username"] != undefined) {
+        //On affiche le nom du joueur
+        document.getElementById("logout-button").classList.remove("hide");
+        document.getElementById("scores-button").classList.remove("hide");
+        document.getElementById("username_show").innerHTML = "Bonjour " + data["username"] +" !";
+    }
+    else{
+        document.getElementById("logout-button").classList.add("hide");
+        document.getElementById("scores-button").classList.add("hide");
+        
+    }
+});
 
 
 
 //On appelle la route /word de notre serveur pour avoir le nombre de lettres et la première lettre du mot
 fetch(adresse + "/word").then(response => response.text()).then(data => {
-    console.log(data);
+    //console.log(data);
     //On tranforme le résultat en tableau
     data = data.split(",");
     length = parseInt(data[0]);
@@ -167,4 +185,16 @@ function sendWord(word) {
     });
 
     
+}
+
+
+function logout(){
+    fetch(adresse + "/logout").then(response => {
+        console.log("Déconnexion réussie");
+        document.location.href = auth_adress;
+    });
+}
+
+function scores(){
+    document.location.href = score_adress + "/";
 }

@@ -128,6 +128,15 @@ h1{
     font-family: "Montserrat", system-ui;
 }
 
+.info-area{
+    font-family: "Montserrat", system-ui;
+    color: white;
+    justify-content: center;
+    
+    
+}
+
+
 /*Animation des lettres de classe motus-titre-<numéro>*/
 /*Chaque lettre se lève en séquence puis revient à sa place*/
 
@@ -137,8 +146,41 @@ h1{
     justify-content: center;
     align-items: center;
     flex-direction: row;
-    margin-top: 50px;
+    position: relative;
+    
+
 }
+
+.userbar{
+    position: relative;
+    display: inline-flex;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+
+}
+
+.userbar .form-submit{
+    font-size: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color:  rgb(28, 32, 36);
+    border: 0.5px solid rgba(79, 95, 110, 0.473);
+    color: white;
+    font-family: "Montserrat", system-ui;
+    margin: 0 15px;
+}
+
+.userbar #logout-button:hover{
+    background-color: rgb(184, 66, 66);
+}
+
+.userbar #scores-button:hover{
+    background-color: rgb(72, 121, 90);
+}
+
+
 
 
 
