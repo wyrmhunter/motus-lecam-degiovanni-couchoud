@@ -9,10 +9,8 @@ const RedisStore = require("connect-redis").default;
 
 //Variables
 const port = process.env.PORT || 4001;
-const auth_adress = "http://localhost:5001";
-const authSessionUrl = 'http://localhost:5001/session';
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5001', 'http://localhost:5001/', 'http://localhost:4001']; 
+const allowedOrigins = ['http://localhost:3001', 'http://localhost:5001', 'http://localhost:5001/', 'http://localhost:4001']; 
 const corsOptions = {
   origin: allowedOrigins, 
   credentials: true, 
@@ -55,21 +53,10 @@ app.use(session({
 }))
 
 
-//Si la session ne comporte pas la variable username, alors on rediriige vers l'authentification
-app.use((req, res, next) => {
-  console.log(req.session);
-  if (!req.session.username) {
-    res.redirect(auth_adress);
-  } else {
-    next();
-  }
-});
-
-
 
 // PATHS
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`Score Server listening on port ${port}`)
 })
 
 
@@ -84,16 +71,30 @@ app.get('/session', (req, res) => {
 })
 
 
-// si l'on va sur /, on renvoie le fichier index.html
+// si l'on va sur /, on renvoie le fichier score.html
 app.get('/', (req, res) => {
+  console.log("score.html");
   res.sendFile(__dirname + '/public/score.html');
 })
 
+// chemin /getscore pour renvoyer le score du joueur stocké sur Redis 'users'
 
 
+// chemin /setscore pour enregistrer sur Redis le score du joueur actuel
+
+
+// chemin /getall pour renvoyer tous les scores des utilisateurs stockés dans 'users'
+app.get('/getall', (req, res) => {
+  //On récupère les scores de tous les joueurs
+  client.hGetAll('users', (err, obj) => {
+    //On envoie les scores
+    console.log(obj);
+    res.send(obj);
+  });
+});
 
 app.get('/port', (req, res) => {
-    res.send(ports.getPortAndOS().toString());
+    res.send(port.getPortAndOS().toString());
   }
 )
 
@@ -103,4 +104,6 @@ app.get('/logout', (req, res) => {
   req.session.destroy();
   res.redirect(auth_adress);
 })
+
+
 

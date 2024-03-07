@@ -31,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 const adresse = "http://localhost:5001";
-const game_adress = "http://localhost:3000";
+const game_adress = "http://localhost:3001";
+const score_adress = "http://localhost:4001";
 const notif_area = document.getElementById("notif-area");
 
 //Fonction pour se connecter
@@ -102,4 +103,9 @@ function register() {
         }
     })
 
+}
+
+
+function scores(){
+    document.location.href = score_adress + "/";
 }

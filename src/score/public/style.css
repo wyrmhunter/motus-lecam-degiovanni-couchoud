@@ -1,0 +1,239 @@
+html{
+    background-color: rgb(28, 32, 36);
+    overflow-x: hidden;
+}
+
+
+h1{
+    color: white;
+    text-align: center;
+    font-size: 50px;
+    margin-top: 50px;
+    font-family: "Nabla", system-ui;
+}
+
+.main-centered{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+    
+    /*Children displayed vertically*/
+    flex-direction: column;
+
+    
+    
+}
+
+.hide {
+    display: none;
+}
+
+.motus-form{
+    background-color: rgb(36, 43, 51);
+    border: 0.5px solid rgba(79, 95, 110, 0.473);
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 10px;
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.24);
+    
+}
+
+/*Style for form submit button*/
+.form-submit{
+    padding: 10px 50px;
+    background-color: rgb(46, 63, 78);
+    border: 0.5px solid rgba(79, 95, 110, 0.473);
+    border-radius: 5px;
+    color: white;
+    font-size: 20px;
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.24);
+    transition: 0.3s;
+    /* center the button */
+    display: block;
+    margin: 0 auto;
+    margin-top: 10px;
+    font-family: "Montserrat", system-ui;
+ 
+}
+
+
+.form-submit:hover{
+    background-color: rgb(66, 125, 184);
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.726);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.form-input{
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    border: none;
+    font-size: 20px;
+    background-color:  rgb(28, 32, 36);
+    font-family: "Montserrat", system-ui;
+    text-align: center;
+    color: white;
+
+}
+
+.cell{
+    padding: 10px;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    font-size: 40px;
+    color: white;
+    border-radius: 5px;
+    background-color: rgb(36, 43, 51);
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.24);
+    border: 0.5px solid rgba(79, 95, 110, 0.473);
+}
+
+.motus-table tr{
+    margin-top: 20px;
+}
+
+.good{
+    background-color: rgb(184, 66, 66);
+    border: 0.5px solid rgb(221, 43, 43);
+}
+
+.almost{
+    background-color: rgb(211, 146, 49);
+    border: 0.5px solid rgb(255, 158, 31);
+}
+
+.notif-bad{
+    background-color: rgb(199, 57, 57);
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.24);
+
+}
+
+.notif-good{
+    background-color: rgb(75, 199, 75);
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.24);
+}
+
+.motus-notif{
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+
+    text-align: center;
+    font-size: 20px;
+    color: white;
+    font-family: "Montserrat", system-ui;
+}
+
+.info-area{
+    font-family: "Montserrat", system-ui;
+    color: white;
+    justify-content: center;
+    
+    
+}
+
+
+/*Animation des lettres de classe motus-titre-<numéro>*/
+/*Chaque lettre se lève en séquence puis revient à sa place*/
+
+/*tous les h1 en ligne*/
+.main-header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    position: relative;
+    
+
+}
+
+.userbar{
+    position: relative;
+    display: inline-flex;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+
+}
+
+.userbar .form-submit{
+    font-size: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color:  rgb(28, 32, 36);
+    border: 0.5px solid rgba(79, 95, 110, 0.473);
+    color: white;
+    font-family: "Montserrat", system-ui;
+    margin: 0 15px;
+}
+
+.userbar #logout-button:hover{
+    background-color: rgb(184, 66, 66);
+}
+
+.userbar #scores-button:hover{
+    background-color: rgb(72, 121, 90);
+}
+
+
+
+
+
+/*Animation des lettres de classe motus-titre-<numéro>*/
+/*Chaque lettre se lève en séquence puis revient à sa place*/
+
+/*keyframes*/
+
+@keyframes motus-titre-animation{
+    0%{
+        transform: translateY(0px);
+        scale: 1;
+    }
+    50%{
+        transform: translateY(-10px);
+        scale: 1.1;
+    }
+    100%{
+        transform: translateY(0px);
+        scale: 1;
+    }
+}
+
+/*Animation des lettres de classe motus-titre-<numéro>*/
+/*l'animation se répète infiniement et toutes les 3 secondes*/
+
+.app-title-1{
+    animation: motus-titre-animation 6s infinite;
+}
+
+.app-title-2{
+    animation: motus-titre-animation 6s infinite 0.4s;
+}
+
+.app-title-3{
+    animation: motus-titre-animation 6s infinite 0.8s;
+}
+
+.app-title-4{
+    animation: motus-titre-animation 6s infinite 1.2s;
+}
+
+.app-title-5{
+    animation: motus-titre-animation 6s infinite 1.6s;
+}
+
+.app-title-6{
+    animation: motus-titre-animation 6s infinite 2s;
+}
+
+.app-title-7{
+    animation: motus-titre-animation 6s infinite 2.4s;
+}
+
+
+

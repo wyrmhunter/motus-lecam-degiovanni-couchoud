@@ -9,11 +9,11 @@ const redis = require('redis');
 const RedisStore = require("connect-redis").default;
 
 //Définition du port sur lequel lancer l'application 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 const auth_adress = "http://localhost:5001";
 const authSessionUrl = 'http://localhost:5001/session';
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5001', 'http://localhost:5001/']; 
+const allowedOrigins = ['http://localhost:3001', 'http://localhost:5001', 'http://localhost:5001/', 'http://localhost:4001']; 
 const corsOptions = {
   origin: allowedOrigins, 
   credentials: true, 
@@ -53,17 +53,6 @@ app.use(session({
   cookie: { maxAge: expiryDate, secure : false, httpOnly: true, domain: 'localhost', path: '/'}
 }))
 
-
-//Si la session ne comporte pas la variable username, alors on rediriige vers l'authentification
-app.use((req, res, next) => {
-  //console.log(req.session);
-  if (!req.session.username) {
-    req.session.destroy();
-    res.redirect(auth_adress);
-  } else {
-    next();
-  }
-});
 
 
 // Path vers le fichier de mots français :
@@ -122,8 +111,15 @@ app.get('/session', (req, res) => {
 
 
 // si l'on va sur /, on renvoie le fichier index.html
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+app.get('/', (req, res,next) => {
+   //console.log(req.session);
+   if (!req.session.username) {
+    req.session.destroy();
+    res.redirect(auth_adress);
+  } else {
+    res.sendFile(__dirname + '/public/index.html');
+    next();
+  }
 })
 
 //sur /validate?word=<MOT>, on reçoit le mot proposé par le joueur et on le compare au mot du jour
@@ -163,7 +159,7 @@ app.get('/validate', (req, res) => {
 
 
 app.get('/port', (req, res) => {
-    res.send(ports.getPortAndOS().toString());
+    res.send(port.getPortAndOS().toString());
   }
 )
 

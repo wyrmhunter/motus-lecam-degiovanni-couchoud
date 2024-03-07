@@ -3,7 +3,7 @@ if (document.cookie.indexOf("essais") == -1) {
     document.cookie = "essais=5";
 }
 */
-const adresse = "http://localhost:3000";
+const adresse = "http://localhost:3001";
 const auth_adress = "http://localhost:5001";
 const score_adress = "http://localhost:4001";
 
@@ -28,6 +28,8 @@ fetch(adresse + "/session").then(response => response.text()).then(data => {
     else{
         document.getElementById("logout-button").classList.add("hide");
         document.getElementById("scores-button").classList.add("hide");
+        //On renvoie vers l'authentification
+        document.location.href = auth_adress;
         
     }
 });

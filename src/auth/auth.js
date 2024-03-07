@@ -11,7 +11,7 @@ const RedisStore = require("connect-redis").default;
 //Définition du port sur lequel lancer l'application 
 const port = process.env.PORT || 5001;
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5001', 'http://localhost:5001/']; 
+const allowedOrigins = ['http://localhost:3001', 'http://localhost:5001', 'http://localhost:5001/', 'http://localhost:4001']; 
 
 const corsOptions = {
   origin: allowedOrigins, 
@@ -105,18 +105,15 @@ app.post('/register', (req, res) => {
           console.log("User already exists");
             res.status(409).send("User already exists");
         } else {
-            await client.hSet('users', user.username, user.password)
+            await client.hSet('users', 'username', user.username, 'password', user.password,'found',0,'try',0)
             .then(async () => {
               console.log("User created");
               //On créé une session pour l'utilisateur
               req.session.username = user.username;
-              //On sauve de manière asynchrone la session
-              await saveSession(req);
+              //On sauve la session dans Redis
+              await saveSession(req, res);
               res.send(201,"User created")
             });
-            
-            
-           
         }
     });
 });
@@ -134,6 +131,7 @@ async function saveSession(req, res) {
   await client.set(token, JSON.stringify(req.session));
   
 }
+
 
 
 // Route pour se connecter
@@ -155,14 +153,13 @@ app.post('/login',(req, res) => {
             res.status(401).send("User does not exist");
         } else {
             let password = await client.hGet('users', user.username);
-            console.log(password);
+            console.log(password)
             if (password == user.password) {
                 console.log("User logged in");
                 req.session.username = user.username;
 
-                //On sauve de manière asynchrone la session
-                await saveSession(req);
-
+                //On sauve la session dans Redis
+                await saveSession(req,res);
                 console.log(req.session);
                 //sends response
                 res.status(200).send("User logged in");
