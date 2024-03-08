@@ -29,6 +29,18 @@ Pour s'authentifier, l'utilisateur va envoyer ses identifiants au Serveur Authen
 
 ![alt text](./img/authentification.png)
 
+Une fois l'utilisateur connecté, le client va effectuer une requête au Serveur Jeu pour obtenir le mot du jour avec la route /word. Le Serveur Jeu va ainsi envoyer le nombres de lettres et la première lettre du mot. Pour rafraîchir le score du joueur, le client envoie interroge le Serveur Jeu avec la route /myscore. Ce dernier envoie ensuite le username du joueur au Serveur Score via la route /getscore?username=xxxx. Le score du joueur est ensuite renvoyé au Serveur Jeu, puis au joueur.
+La boucle du jeu Motus se déroule de la manière suivante :
+- En début d'itération, l'utilisateur propose un mot qui est envoyé au Serveur Jeu avec la route /validate.
+- A chaque itération, on teste si le joueur a gagné ou s'il ne dispose plus d'essais. Dans un de ces deux cas, le Servuer Jeu envoie alors le nombre d'essais et l'état du jeu (victoire ou défaite du joueur) au Serveur Score avec la route /setscore. Le score du joueur est ensuite renvoyé au Serveur Jeu puis au client.
+- En fin d'itération, le Serveur Jeu envoie les lettres bien ou mal placées, le nombre d'essais restants ainsi que le booléen qui indique si le mot proposé par le joueur correspond au mot du jour ou non.
+
+![alt text](./img/motus_game_and_score.png)
+
+Si l'utilisateur souhaite se déconnecter, on envoie une requête de déconnexion au Serveur Jeu avec la route /logout. Ce dernier envoie alors le token sauvegardé dans la session au Serveur Authentification avec la route /logout?token=xxxx. Le serveur Authentification notifie ensuite le serveur Jeu de la suppression du token (statut 200). Enfin, le serveur Jeu retourne la réussite de la déconnexion au client qui renvoie l'utilisateur sur la page d'authentification.
+
+![alt text](./img/deconnexion.png)
+
 **Remerciements**
 
 * Simon Gomez pour nous avoir ouvert au domaine des microservices et pour la qualité de son enseignement. ([https://simongomezuniv.github.io/](https://simongomezuniv.github.io/))
