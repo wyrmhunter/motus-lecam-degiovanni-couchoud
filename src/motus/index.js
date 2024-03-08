@@ -3,7 +3,6 @@ const app = express()
 const fs = require('fs');
 const seedrandom = require('seedrandom');
 const cors = require('cors');
-const { get } = require('http');
 const session = require('express-session')
 
 //Définition du port sur lequel lancer l'application 

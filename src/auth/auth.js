@@ -1,8 +1,6 @@
 const express = require('express')
 const app = express()
 const fs = require('fs');
-const { get } = require('http');
-const { json } = require('express');
 const cors = require('cors');
 const redis = require('redis');
 

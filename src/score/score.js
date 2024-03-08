@@ -3,10 +3,7 @@ const express = require('express')
 const app = express()
 const fs = require('fs');
 const cors = require('cors');
-const session = require('express-session')
 const redis = require('redis');
-const { parse } = require('path');
-const RedisStore = require("connect-redis").default;
 
 //Variables
 const port = process.env.PORT || 4001;
