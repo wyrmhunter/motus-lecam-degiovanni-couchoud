@@ -185,8 +185,17 @@ h1{
 /*CSS FOR MY-SCORE TABLE*/
 
 #my-score{
-
     padding: 10px;  
+}
+
+.scoreboard{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-family: "Montserrat", system-ui;
+    color: white;
+
 }
 
 #my-score th{
@@ -196,6 +205,16 @@ h1{
     box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.24);
     border: 0.5px solid rgba(79, 95, 110, 0.473);
     background-color: rgb(36, 43, 51);
+}
+
+#my-score td{
+    padding: 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.24);
+    border: 0.5px solid rgba(79, 95, 110, 0.473);
+    background-color: rgb(36, 43, 51);
+    text-align: center;
 }
 
 

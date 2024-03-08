@@ -167,6 +167,15 @@ function sendWord() {
             notif_area.classList.remove("notif-bad");
             notif_area.innerHTML = "Bravo, vous avez gagné !";
             won = true;
+            //On appelle la route /getscore de notre serveur pour avoir le score du joueur
+            fetch("/myscore").then(response => response.text()).then(data => {
+                data = JSON.parse(data);
+                console.log(data);
+                //On ajoute les score dans myavg et myfound
+                myavg.innerHTML = data['avg_try'];
+                myfound.innerHTML = data['found'];
+
+            });
             return;
         }
 
@@ -187,6 +196,15 @@ function sendWord() {
             notif_area.classList.remove("notif-good");
             notif_area.classList.add("notif-bad");
             notif_area.innerHTML = "Nombre d'essais épuisé, réessayez demain !";
+            //On appelle la route /getscore de notre serveur pour avoir le score du joueur
+            fetch("/myscore").then(response => response.text()).then(data => {
+                data = JSON.parse(data);
+                console.log(data);
+                //On ajoute les score dans myavg et myfound
+                myavg.innerHTML = data['avg_try'];
+                myfound.innerHTML = data['found'];
+
+            });
         }
     });
 
@@ -195,7 +213,7 @@ function sendWord() {
 
 
 function logout(){
-    fetch(auth_adress+"/logout").then(response => {
+    fetch("/logout").then(response => {
         if (response.status != 200) {
             console.log("Erreur lors de la déconnexion");
         }else{

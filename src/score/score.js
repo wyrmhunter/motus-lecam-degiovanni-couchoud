@@ -89,7 +89,7 @@ app.post('/setscore', async(req, res) => {
     let prop = JSON.parse(body);
     console.log(prop);
     let username = prop.username;
-    let try_today = prop.tries;
+    let try_today = prop.tries+1; //empêche d'avoir 0 essais - Correction d'une erreur dans la requête
       
     //Si le score du joueur n'existe pas, on le crée
     if(await client.exists('score-'+username)==0){
@@ -109,6 +109,8 @@ app.post('/setscore', async(req, res) => {
 
     //On calcule la moyenne des essais
     let avg_try = (old_try*old_found + try_today)/(old_found+1);
+    //On arrondit la moyenne à 2 chiffres après la virgule
+    avg_try = Math.round(avg_try*100)/100;
 
     //On incrémente le nombre de mots trouvés
     let found = parseInt(old_found)+1;

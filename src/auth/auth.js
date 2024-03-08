@@ -44,15 +44,18 @@ client.on("error", (err) => {
 });
 
 app.set('trust proxy', 1) // trust first proxy
-const expirytime = 360000;
+const expirytime =  60*60*1000;
 const sessionMiddleWare = session({
+  store: new session.MemoryStore,
   secret: 's3Cur3',
-  name: 'userSession',
+  name: 'authSession',
   saveUninitialized: false,
   _expires: expirytime,
   resave: false,
   cookie: { maxAge: expirytime, secure : false, httpOnly: true, domain: 'localhost', path: '/'}
 });
+
+
 app.use(sessionMiddleWare);
 
 
@@ -146,8 +149,16 @@ app.post('/login', async (req, res) => {
     //On génère le token d'autorisation
     var actoken = generateToken();
     req.session.token = actoken;
+    req.session.username = user.username;
+    req.session.save( function(err) {
+      if (err) {
+        console.log(err);
+      }
+      console.log(req.session);
+    });
     //On enregistre la relation token-user dans Redis
     await client.hSet('ac-'+ actoken.toString(), 'user', user.username);
+    await client.expire('ac-'+ actoken.toString(), expirytime/1000);
 
     res.status(200).send(actoken);
     
@@ -155,20 +166,23 @@ app.post('/login', async (req, res) => {
 
 //Chemin pour le logout, qui sera appelé par différents services
 app.get('/logout', async(req, res) => {
-
-  //On détruit le token stocké dans redis
-  let token = req.session.token;
+  //On récupère le token envoyé dans la requête
+  let token = req.query.token;
   console.log('Token to delete is : '+token);
-  await client.del('ac-'+token, function(err, response) {
-    if (response == 1) {
-      console.log("Token deleted successfully");
-      //on envoie une réponse au client
-      res.status(200).send("Token deleted successfully");
-    } else {
-      console.log("Token not found");
-      res.status(404).send("Token not found");
+  let response = await client.del('ac-'+token);
+  if (response != 1) {
+    console.log("Token not found");
+    res.status(404).send("Token not found");
+    return;
+  } 
+
+  //On détruit la session
+  req.session.destroy(function(err) {
+    if (err) {
+      console.log(err);
     }
   });
+  res.status(200).send("Logout successful");
 
 })
 
@@ -180,19 +194,13 @@ app.get('/token', async(req, res) => {
   console.log('Token is : '+token);
   //On interroge le serveur d'authentification pour savoir si le token correspond à un utilisateur
   let user = await client.hGet('ac-'+token, 'user');
-
-  console.log(user);
+  console.log('User is : '+user);
   if (user == null) {
-    res.status(401).send("Invalid token");
-    return;
+    console.log("Token not valid");
+    res.status(401).send("Token not valid");
+  } else {
+    console.log("Token valid");
+    res.status(200).send(user);
   }
-  
-
-  console.log("Token valid");
-  session.token = token;
-  console.log(req.session);
-  res.status(200).send(user);
-  
-  
 })
 

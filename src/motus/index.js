@@ -5,7 +5,6 @@ const seedrandom = require('seedrandom');
 const cors = require('cors');
 const { get } = require('http');
 const session = require('express-session')
-const redis = require('redis');
 
 //Définition du port sur lequel lancer l'application 
 const port = process.env.PORT || 3001;
@@ -22,29 +21,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.static('public'));
 
-//On contacte le conteneur REDIS
-const client = redis.createClient({
-  host: '0.0.0.0', //redis_score
-  port: 6379,      
-});
-(async () => {
-  //On attend que la connexion soit établie
-  await client.connect();
-})();
-console.log("Attempting to connect to redis");
-client.on('connect', () => {
-    console.log('Connected to DB!');
-});
-// Log any error that may occur to the console
-client.on("error", (err) => {
-    console.log(`Error:${err}`);
-});
-
 app.set('trust proxy', 1) // trust first proxy
-const expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+const expiryDate = 60*60*1000 // 1 hour
 app.use(session({
+  store: new session.MemoryStore,
   secret: 's3Cur3',
-  name: 'userSession',
+  name: 'gameSession',
   saveUninitialized: false,
   _expires: expiryDate,
   resave: false,
@@ -101,6 +83,8 @@ app.get('/word', (req, res) => {
 app.get('/game', (req, res) => {
   console.log("Getting token");
   let token = req.query.token;
+  req.session.actoken = token;
+  req.session.save();
   console.log('Token is : '+token);
   //On interroge le serveur d'authentification pour savoir si le token correspond à un utilisateur
   fetch(auth_adress+'/token?token='+token).then(async response => {
@@ -203,5 +187,21 @@ app.get('/myscore', (req, res) => {
   score = res.redirect(score_adress+"/getscore?username="+req.session.username);
   //on récupère la réponse du serveur score.js
   res.send(score);
+})
+
+//route /logout qui va envoyer le token a supprimer au serveur d'authentification
+app.get('/logout', (req, res) => {
+  console.log("Logging out");
+  console.log(req.session.actoken);
+  //On envoie le token au serveur d'authentification pour qu'il le supprime
+  fetch(auth_adress+'/logout?token='+req.session.actoken).then(response => {
+    if (response.status != 200) {
+      console.log("Erreur lors de la déconnexion");
+      res.status(500).send("Erreur lors de la déconnexion");
+    }else{
+      console.log("Déconnexion réussie");
+      res.send("Déconnexion réussie");
+    }
+  });
 })
 
