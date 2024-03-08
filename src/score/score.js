@@ -5,6 +5,7 @@ const fs = require('fs');
 const cors = require('cors');
 const session = require('express-session')
 const redis = require('redis');
+const { parse } = require('path');
 const RedisStore = require("connect-redis").default;
 
 //Variables
@@ -25,7 +26,7 @@ app.use(express.static('public'));
 //On contacte le conteneur REDIS
 const client = redis.createClient({
   host: '0.0.0.0', //redis_score
-  port: 6379,      
+  port: 6380,      
 });
 (async () => {
   //On attend que la connexion soit établie
@@ -110,7 +111,7 @@ app.post('/setscore', async(req, res) => {
     let avg_try = (old_try*old_found + try_today)/(old_found+1);
 
     //On incrémente le nombre de mots trouvés
-    let found = old_found+1;
+    let found = parseInt(old_found)+1;
 
 
     

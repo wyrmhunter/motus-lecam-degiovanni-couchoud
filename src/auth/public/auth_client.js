@@ -52,15 +52,19 @@ function login() {
         body: JSON.stringify({username: username, password: password})
     })
     // On attend la réponse du serveur
-    .then(response => {
+    .then(async response => {
         if (response.status == 200) {
             //notification
             notif_area.classList.remove("notif-bad");
             notif_area.classList.add("notif-good");
             notif_area.innerHTML = "Connexion réussie";
             console.log("Connexion réussie");
-            //On redirige vers la page de jeu
-            document.location.href = game_adress;
+            //On récupère le token renvoyé par le serveur
+            let actoken = await response.text();
+            console.log(actoken);
+
+            //On redirige vers la page de jeu avec le token
+            document.location.href = game_adress + "/game?token=" + actoken;
 
         } else {
             //notification
@@ -97,7 +101,14 @@ function register() {
     .then(response => {
         if (response.status == 201 ) {
             console.log("User created");
-            document.location.href = game_adress;
+            //notification
+            notif_area.classList.remove("notif-bad");
+            notif_area.classList.add("notif-good");
+            notif_area.innerHTML = "Inscription réussie";
+            //On réactive le formulaire de connexion
+            document.getElementById('loginForm').classList.remove('hide');
+            document.getElementById('registerForm').classList.add('hide');
+
         } else {
             console.log("User already exists");
         }
@@ -105,7 +116,3 @@ function register() {
 
 }
 
-
-function scores(){
-    document.location.href = score_adress + "/";
-}

@@ -6,12 +6,10 @@ const cors = require('cors');
 const { get } = require('http');
 const session = require('express-session')
 const redis = require('redis');
-const RedisStore = require("connect-redis").default;
 
 //Définition du port sur lequel lancer l'application 
 const port = process.env.PORT || 3001;
 const auth_adress = "http://localhost:5001";
-const authSessionUrl = 'http://localhost:5001/session';
 const score_adress = "http://localhost:4001";
 
 const allowedOrigins = ['http://localhost:3001', 'http://localhost:5001', 'http://localhost:5001/', 'http://localhost:4001']; 
@@ -35,7 +33,7 @@ const client = redis.createClient({
 })();
 console.log("Attempting to connect to redis");
 client.on('connect', () => {
-    console.log('Connected!');
+    console.log('Connected to DB!');
 });
 // Log any error that may occur to the console
 client.on("error", (err) => {
@@ -45,7 +43,6 @@ client.on("error", (err) => {
 app.set('trust proxy', 1) // trust first proxy
 const expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 app.use(session({
-  store: new RedisStore({ client: client }),
   secret: 's3Cur3',
   name: 'userSession',
   saveUninitialized: false,
@@ -100,28 +97,28 @@ app.get('/word', (req, res) => {
   res.send(wordLength().toString());
 })
 
-
-//api /session qui renvoie les valeurs de la session en json
-app.get('/session', (req, res) => {
-  console.log(req.session);
-  //on parse la session en json
-  let session = JSON.stringify(req.session);
-  //on envoie la session
-  res.send(session);
+//sur la route /, on récupère le token passé dans l'url
+app.get('/game', (req, res) => {
+  console.log("Getting token");
+  let token = req.query.token;
+  console.log('Token is : '+token);
+  //On interroge le serveur d'authentification pour savoir si le token correspond à un utilisateur
+  fetch(auth_adress+'/token?token='+token).then(async response => {
+    if (response.status != 200) {
+      console.log("Token not valid");
+      res.status(401).redirect(auth_adress);
+      return;
+    }else{
+      console.log("Token valid");
+      //On récupère le username
+      req.session.username = await response.text();
+      console.log(req.session.username);
+      res.sendFile(__dirname + '/public/index.html');
+    }
+  });
+  
 })
 
-
-// si l'on va sur /, on renvoie le fichier index.html
-app.get('/', (req, res,next) => {
-   //console.log(req.session);
-   if (!req.session.username) {
-    req.session.destroy();
-    res.redirect(auth_adress);
-  } else {
-    res.sendFile(__dirname + '/public/index.html');
-    next();
-  }
-})
 
 //sur /validate?word=<MOT>, on reçoit le mot proposé par le joueur et on le compare au mot du jour
 app.post('/validate', async (req, res) => {
@@ -201,11 +198,10 @@ app.get('/port', (req, res) => {
 
 //route score pour passer le username du joueur dans l'url
 app.get('/myscore', (req, res) => {
+  console.log("Getting score for : "+req.session.username);
   //On demande au serveur score.js d'appeler /getscore avec le username du joueur
   score = res.redirect(score_adress+"/getscore?username="+req.session.username);
-  console.log(score);
   //on récupère la réponse du serveur score.js
   res.send(score);
 })
-
 

@@ -17,24 +17,7 @@ document.getElementById("logout-button").classList.add("hide");
 const myavg = document.getElementById('my-avg');
 const myfound = document.getElementById('my-found');
 
-//On appelle /session pour savoir si le joueur est connecté + afficher le nom du joueur
-fetch(adresse + "/session").then(response => response.text()).then(data => {
-    console.log(data);
-    data = JSON.parse(data);
-    if (data["username"] != undefined) {
-        //On affiche le nom du joueur
-        document.getElementById("logout-button").classList.remove("hide");
-        //document.getElementById("scores-button").classList.remove("hide");
-        document.getElementById("username_show").innerHTML = "Bonjour " + data["username"] +" !";
-    }
-    else{
-        document.getElementById("logout-button").classList.add("hide");
-        //document.getElementById("scores-button").classList.add("hide");
-        //On renvoie vers l'authentification
-        document.location.href = auth_adress;
-        
-    }
-});
+
 
 
 
