@@ -12,19 +12,29 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PASSWORD=redis
-
     ports:
       - "6379:6379"
 
   redis_score:
     image: redis
     container_name: redis_score
-
     environment:
       - REDIS_HOST=redis
       - REDIS_PASSWORD=redis
     ports:
-      - "6380:6379"
+      - "6380:6379" 
+
+  score_service:
+    container_name: score_service
+    build: ./score
+
+  auth_service:
+    container_name: score_service
+    build: ./auth
+
+  game_service:
+    container_name: score_service
+    build: ./motus
 
 
 
