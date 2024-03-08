@@ -14,7 +14,7 @@
     <div class="userbar">
         <p id="username_show" class="info-area"></p>
         <button id="logout-button" class="form-submit" onclick="logout()">Se déconnecter</button>
-        <button id="scores-button" class="form-submit" onclick="scores()">Tableau des scores</button>
+        <!--<button id="scores-button" class="form-submit" onclick="scores()">Tableau des scores</button>-->
     </div>
     <div class="main-header">
         <h1 class="app-title-1">M</h1><h1 class="app-title-2">O</h1><h1 class="app-title-3">M</h1><h1 class="app-title-4">O</h1><h1 class="app-title-5">T</h1><h1 class="app-title-6">U</h1><h1 class="app-title-7">S</h1>
@@ -28,6 +28,20 @@
             <input type="text" name="word" required class="form-input"><br>
             <button  class="form-submit" onclick="sendWord()">Proposer</button>
         </form>
+        <div class="scoreboard">
+            <h2>Mon score</h2>
+            <table id="my-score">
+                <tr>
+                    <th>Moyenne nombre d'essais</th>
+                    <th>Nombre mots trouvés</th>
+                </tr>
+                <tr>
+                    <td id="my-avg"></td>
+                    <td id="my-found"></td>
+                </tr>
+            </table>
+        </div>
     </div>
+    
     <script src="client.js"></script>
 </html>

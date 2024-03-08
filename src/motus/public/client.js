@@ -13,7 +13,9 @@ let essais = 5;
 
 //On fait en sorte que les boutons de déconnexion et score sont cachés
 document.getElementById("logout-button").classList.add("hide");
-document.getElementById("scores-button").classList.add("hide");
+//document.getElementById("scores-button").classList.add("hide");
+const myavg = document.getElementById('my-avg');
+const myfound = document.getElementById('my-found');
 
 //On appelle /session pour savoir si le joueur est connecté + afficher le nom du joueur
 fetch(adresse + "/session").then(response => response.text()).then(data => {
@@ -22,12 +24,12 @@ fetch(adresse + "/session").then(response => response.text()).then(data => {
     if (data["username"] != undefined) {
         //On affiche le nom du joueur
         document.getElementById("logout-button").classList.remove("hide");
-        document.getElementById("scores-button").classList.remove("hide");
+        //document.getElementById("scores-button").classList.remove("hide");
         document.getElementById("username_show").innerHTML = "Bonjour " + data["username"] +" !";
     }
     else{
         document.getElementById("logout-button").classList.add("hide");
-        document.getElementById("scores-button").classList.add("hide");
+        //document.getElementById("scores-button").classList.add("hide");
         //On renvoie vers l'authentification
         document.location.href = auth_adress;
         
@@ -50,6 +52,16 @@ fetch(adresse + "/word").then(response => response.text()).then(data => {
 
     //On crée la table
     CreateTable(length);
+});
+
+//On appelle la route /getscore de notre serveur pour avoir le score du joueur
+fetch("/myscore").then(response => response.text()).then(data => {
+    data = JSON.parse(data);
+    console.log(data);
+    //On ajoute les score dans myavg et myfound
+    myavg.innerHTML = data['avg_try'];
+    myfound.innerHTML = data['found'];
+
 });
 
 function CreateTable( length){
@@ -78,7 +90,7 @@ document.getElementsByClassName("form-submit")[0].addEventListener("click", func
   });
 
 // On créé une méthode de Post pour envoyer le mot proposé par le joueur
-function sendWord(word) {
+function sendWord() {
 
     //let essais = document.cookie.split("=")[1];
 
@@ -109,9 +121,17 @@ function sendWord(word) {
         return;
     }
     
-
+    
     //On post le mot 
-    fetch(adresse + "/validate?word=" + input).then(response => response.text()).then(data => {
+    //On post les données de connexion au serveur
+    fetch(adresse + '/validate', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({word: input, tries: essais})
+    }).then(response => response.text()).then(data => {
 
         console.log(data);
 
@@ -120,6 +140,7 @@ function sendWord(word) {
         answer = data["answer"];
         good_letters = data["good_letters"];
         misplaced_letters = data["misplaced_letters"];
+        remaining = data["remaining"]; 
 
     
 
@@ -129,7 +150,7 @@ function sendWord(word) {
         //On met à jour le nombre d'essais
         
         
-        essais = parseInt(essais) - 1;
+        essais = parseInt(remaining);
         //document.cookie = "essais=" + essais;
         console.log(essais);
 
@@ -191,12 +212,24 @@ function sendWord(word) {
 
 
 function logout(){
-    fetch(adresse + "/logout").then(response => {
-        console.log("Déconnexion réussie");
-        document.location.href = auth_adress;
+    fetch(auth_adress+"/logout").then(response => {
+        if (response.status != 200) {
+            console.log("Erreur lors de la déconnexion");
+        }else{
+            console.log("Déconnexion réussie");
+            document.location.href = auth_adress + "/";
+        }
+    });
+}
+function scores(){
+    //On appelle la route /score 
+    fetch('/score').then(response => {
+        if (response.status != 200) {
+            console.log("Erreur lors de la récupération des scores");
+        }else{
+            console.log("Scores récupérés");
+            document.location.href = score_adress;
+        }
     });
 }
 
-function scores(){
-    document.location.href = score_adress + "/";
-}

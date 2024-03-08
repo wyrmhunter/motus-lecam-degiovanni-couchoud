@@ -12,6 +12,7 @@ const RedisStore = require("connect-redis").default;
 const port = process.env.PORT || 3001;
 const auth_adress = "http://localhost:5001";
 const authSessionUrl = 'http://localhost:5001/session';
+const score_adress = "http://localhost:4001";
 
 const allowedOrigins = ['http://localhost:3001', 'http://localhost:5001', 'http://localhost:5001/', 'http://localhost:4001']; 
 const corsOptions = {
@@ -25,7 +26,7 @@ app.use(express.static('public'));
 
 //On contacte le conteneur REDIS
 const client = redis.createClient({
-  host: '0.0.0.0', 
+  host: '0.0.0.0', //redis_score
   port: 6379,      
 });
 (async () => {
@@ -123,9 +124,19 @@ app.get('/', (req, res,next) => {
 })
 
 //sur /validate?word=<MOT>, on reçoit le mot proposé par le joueur et on le compare au mot du jour
-app.get('/validate', (req, res) => {
-    let word = req.query.word.toString();
-    console.log(word);
+app.post('/validate', async (req, res) => {
+  //On récupère le json
+  let body = '';
+  req.on('data', chunk => {
+    body += chunk.toString();
+  });
+  console.log("Validating word");
+  req.on('end', async () => {
+    //On parse le json
+    let prop = JSON.parse(body);
+    console.log(prop);
+    let word = prop.word;
+    let tries = prop.tries;
     let wordOfTheDay = getWordOfTheDay();
     console.log(wordOfTheDay);
     //On compare lettre par lettre
@@ -133,27 +144,51 @@ app.get('/validate', (req, res) => {
     let answer = true;
     let good_letters = [];
     let misplaced_letters = [];
-    
+  
     for (let i = 0; i < word.length; i++) {
-        if (word[i] == wordOfTheDay[i]) {
-            good_letters.push(word[i]);
-        } else {
-            //On regarde si la lettre est dans le mot du jour
-            if (wordOfTheDay.includes(word[i])) {
-                misplaced_letters.push(word[i]);
-            }
-            answer = false;
+      if (word[i] == wordOfTheDay[i]) {
+        good_letters.push(word[i]);
+      } else {
+        //On regarde si la lettre est dans le mot du jour
+        if (wordOfTheDay.includes(word[i])) {
+          misplaced_letters.push(word[i]);
         }
+        answer = false;
+      }
     }
+    remaining = tries - 1;
+    let username = req.session.username;
+
+    //Si answer est troujours true alors on a gagné, si remaining est à 0 alors on a perdu
+    if (answer == true || remaining == 0) {
+      //On envoie au serveur de score le nombre d'essais 'tries' + l'utilisateur pour qu'il le stocke
+      await fetch(score_adress + '/setscore', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({username: username,tries: tries})
+      }).then(response => {
+        if (response.status != 200) {
+            console.log("Erreur lors de l'envoi du score");
+        }else{
+            console.log("Score envoyé");
+        }
+      });
+    }
+
     // On envoie une réponse JSON avec :
     // - si le mot est correct
     // - les lettre bien placées
     // - les lettres mal placées
     res.json({
-        answer: answer,
-         good_letters: good_letters,
-          misplaced_letters: misplaced_letters
-        });
+      answer: answer,
+      good_letters: good_letters,
+      misplaced_letters: misplaced_letters,
+      remaining: remaining
+    });
+  });
 
 })
 
@@ -163,13 +198,14 @@ app.get('/port', (req, res) => {
   }
 )
 
-//On créé une route pour se déconnecter
-app.get('/logout', (req, res) => {
-  //On détruit la session
-  req.session.destroy();
-  res.redirect(auth_adress);
+
+//route score pour passer le username du joueur dans l'url
+app.get('/myscore', (req, res) => {
+  //On demande au serveur score.js d'appeler /getscore avec le username du joueur
+  score = res.redirect(score_adress+"/getscore?username="+req.session.username);
+  console.log(score);
+  //on récupère la réponse du serveur score.js
+  res.send(score);
 })
-
-
 
 

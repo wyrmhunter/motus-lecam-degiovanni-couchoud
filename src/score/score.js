@@ -24,7 +24,7 @@ app.use(express.static('public'));
 
 //On contacte le conteneur REDIS
 const client = redis.createClient({
-  host: '0.0.0.0', 
+  host: '0.0.0.0', //redis_score
   port: 6379,      
 });
 (async () => {
@@ -40,17 +40,6 @@ client.on("error", (err) => {
     console.log(`Error:${err}`);
 });
 
-app.set('trust proxy', 1) // trust first proxy
-const expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
-app.use(session({
-  store: new RedisStore({ client: client }),
-  secret: 's3Cur3',
-  name: 'userSession',
-  saveUninitialized: false,
-  _expires: expiryDate,
-  resave: false,
-  cookie: { maxAge: expiryDate, secure : false, httpOnly: true, domain: 'localhost', path: '/'}
-}))
 
 
 
@@ -62,55 +51,83 @@ app.listen(port, () => {
 
 
 
-//api /session qui renvoie les valeurs de la session en json
-app.get('/session', (req, res) => {
-  //on parse la session en json
-  let session = JSON.stringify(req.session);
-  //on envoie la session
-  res.send(session);
-})
-
-
 // si l'on va sur /, on renvoie le fichier score.html
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/score.html');
 })
 
 // chemin /getscore pour renvoyer le score du joueur stocké sur Redis 'users'
-app.get('/getscore', (req, res) => {
-  console.log("getscore");
-  //On récupère le score du joueur actuel
+app.get('/getscore',  async (req, res) => {
 
-  res.send("getscore");
+  //On récupère le nom du joueur actuel dans l'url
+  let username = req.query.username;
+  console.log(username);
+  //Si l'utilisateur n'est pas connecté, on ne renvoie rien
+  if(username==undefined){
+    res.send("No user connected");
+    return;
+  }
+  console.log("Searching score for : "+username);
+  //On récupère le score du joueur actuel
+  avg_try= await client.hGet('score-'+username,'avg_try');
+  found =  await client.hGet('score-'+username,'found');
+  //On renvoie le score du joueur actuel
+  res.send({'avg_try':avg_try, 'found':found});
 });
 
 // chemin /setscore pour enregistrer sur Redis le score du joueur actuel
-app.get('/setscore', (req, res) => {
-  console.log("setscore");
-  //On enregistre le score du joueur actuel
+app.post('/setscore', async(req, res) => {
+  //On récupère le json
+  let body = '';
+  req.on('data', chunk => {
+    body += chunk.toString();
+  });
+  console.log("Validating word");
+  req.on('end', async () => {
+    //On parse le json
+    let prop = JSON.parse(body);
+    console.log(prop);
+    let username = prop.username;
+    let try_today = prop.tries;
+      
+    //Si le score du joueur n'existe pas, on le crée
+    if(await client.exists('score-'+username)==0){
 
-  res.send("setscore");
+      console.log("Creating score registry for : "+username);
+      await client.hSet('score-'+username, 'avg_try',try_today);
+      await client.hSet('score-'+username, 'found',1);
+      res.send("Score created");
+      return;
+
+    }
+
+    //Dans le cas où le score du joueur existe déjà, on le met à jour
+    //On récupère le score du joueur actuel
+    let old_try= await client.hGet('score-'+username,'avg_try');
+    let old_found =  await client.hGet('score-'+username,'found');
+
+    //On calcule la moyenne des essais
+    let avg_try = (old_try*old_found + try_today)/(old_found+1);
+
+    //On incrémente le nombre de mots trouvés
+    let found = old_found+1;
+
+
+    
+    //On enregistre le score du joueur actuel
+    await client.hSet('score-'+username, 'avg_try',avg_try);
+    await client.hSet('score-'+username, 'found',found);
+
+    res.send("Score updated for "+username);
+  });
 });
 
-// chemin /getall pour renvoyer tous les scores des utilisateurs stockés dans 'users'
-app.get('/getall', (req, res) => {
-  console.log("getall");
-  //On récupère les scores de tous les joueurs
 
-  res.send("getall");
-});
 
 app.get('/port', (req, res) => {
     res.send(port.getPortAndOS().toString());
   }
 )
-
-//On créé une route pour se déconnecter
-app.get('/logout', (req, res) => {
-  //On détruit la session
-  req.session.destroy();
-  res.redirect(auth_adress);
-})
 
 
 

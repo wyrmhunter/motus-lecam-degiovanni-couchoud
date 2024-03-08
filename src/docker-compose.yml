@@ -5,20 +5,29 @@ networks:
     external:
       name: 'motus_network'
 
-
 services:
-  redis_motus:
+  redis_auth:
     image: redis
-    container_name: redis_motus
+    container_name: redis_auth
     environment:
       - REDIS_HOST=redis
       - REDIS_PASSWORD=redis
-    networks:
-      - motus-network
+
     ports:
       - "6379:6379"
 
+  redis_score:
+    image: redis
+    container_name: redis_score
+
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=redis
+    ports:
+      - "6380:6379"
 
 
 
 
+
+ 

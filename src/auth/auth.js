@@ -30,7 +30,7 @@ app.use(express.static('public'));
 
 //On contacte le conteneur REDIS
 const client = redis.createClient({
-  host: '0.0.0.0', 
+  host: '0.0.0.0', //redis_auth 
   port: 6379,      
 });
 (async () => {
@@ -99,19 +99,17 @@ app.post('/register', (req, res) => {
         let user = JSON.parse(body);
         console.log(user);
         
-        let userExists = await client.hExists('users', user.username);
+        let userExists = await client.exists ('user-'+ user.username);
         console.log(userExists);
         if (userExists == 1) {
           console.log("User already exists");
             res.status(409).send("User already exists");
         } else {
-            await client.hSet('users', 'username', user.username, 'password', user.password,'found',0,'try',0)
+            await client.hSet('user-'+user.username, 'password', user.password)
             .then(async () => {
               console.log("User created");
-              //On créé une session pour l'utilisateur
-              req.session.username = user.username;
-              //On sauve la session dans Redis
-              await saveSession(req, res);
+              await client.hSet('score-'+ user.username, 'avg_try', 0);
+              await client.hSet('score-'+ user.username,'found',0);
               res.send(201,"User created")
             });
         }
@@ -146,27 +144,35 @@ app.post('/login',(req, res) => {
         //On parse le json
         let user = JSON.parse(body);
         console.log(user);
-        let userExists = await client.hExists('users', user.username);
+        let userExists = await client.exists('user-'+ user.username);
         console.log(userExists);
         if (userExists == 0) {
             console.log("User does not exist");
             res.status(401).send("User does not exist");
-        } else {
-            let password = await client.hGet('users', user.username);
-            console.log(password)
-            if (password == user.password) {
-                console.log("User logged in");
-                req.session.username = user.username;
-
-                //On sauve la session dans Redis
-                await saveSession(req,res);
-                console.log(req.session);
-                //sends response
-                res.status(200).send("User logged in");
-            } else {
-                console.log("Wrong password");
-                res.status(401).send("Wrong password");
-            }
+            return;
+        } 
+        
+        let password = await client.hGet('user-'+user.username, 'password');
+        console.log(password)
+        if (password != user.password) {
+          console.log("Wrong password");
+          res.status(401).send("Wrong password");
+          return;  
         }
+
+        console.log("User logged in");
+        req.session.username = user.username;
+        await client.hSet('ac-'+ generateToken().toString(), 'user', user.username);
+
+        res.status(200).send("User logged in");
     });
 });
+
+//Chemin pour le logout, qui sera appelé par différents services
+app.get('/logout', async(req, res) => {
+
+  //On détruit la session
+  req.session.destroy();
+  res.send(202,"User logged out");
+
+})

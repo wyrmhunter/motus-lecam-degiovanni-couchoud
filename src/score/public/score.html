@@ -16,6 +16,18 @@
         <button id="login-button" class="form-submit hide" onclick="login()">S'authentifier</button>
         <button id="game-button" class="form-submit hide" onclick="game()">Retour jeu</button>     
     </div>
+    <div class="scoreboard">
+        <h2>Mon score</h2>
+        <table id="my-score">
+            <tr>
+                <th>Moyenne nombre d'essais</th>
+                <th>Nombre mots trouvés</th>
+            </tr>
+            <tr>
+                <td id="my-avg"></td>
+                <td id="my-found"></td>
+            </tr>
+        </table>
     <script src="score_client.js"></script>
 </body>
 </html>

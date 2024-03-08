@@ -1,6 +1,7 @@
 html{
     background-color: rgb(28, 32, 36);
     overflow-x: hidden;
+    color: white;
 }
 
 
@@ -24,6 +25,10 @@ h1{
 
     
     
+}
+
+table{
+    color:white;
 }
 
 

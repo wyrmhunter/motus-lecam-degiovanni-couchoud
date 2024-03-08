@@ -2,36 +2,35 @@ const auth_adress = "http://localhost:5001";
 const game_adress = "http://localhost:3001";
 const score_adress = "http://localhost:4001";
 
+const myavg = document.getElementById('my-avg');
+const myfound = document.getElementById('my-found');
 
-//Si le joueur est déjà connecté, on laisse les boutons de déconnexion et retour au jeu visibles
-fetch(score_adress+"/session").then(response => response.text()).then(data => {
+
+
+
+
+//On appelle la route /getscore de notre serveur pour avoir le score du joueur
+fetch(score_adress+"/getscore").then(response => response.text()).then(data => {
     data = JSON.parse(data);
     console.log(data);
-    if (data["username"] != undefined) {
-        //On affiche le nom du joueur
-        document.getElementById("logout-button").classList.remove("hide");
-        document.getElementById("game-button").classList.remove("hide");
-        document.getElementById("username_show").innerHTML = "Bonjour " + data["username"] +" !";
-    }
-    else{
-        document.getElementById("login-button").classList.remove("hide"); 
-    }
+    //On ajoute les score dans myavg et myfound
+    myavg.innerHTML = data['avg_try'];
+    myfound.innerHTML = data['found'];
+
 });
 
 
-//On appelle /getall pour récupérer tous les scores
-fetch(score_adress+"/getall").then(response => response.text()).then(data => {
-    data = JSON.parse(data);
-    console.log(data);
-    
-});
 
 
 
 function logout(){
-    fetch(score_adress+"/logout").then(response => {
-        console.log("Déconnexion réussie");
-        document.location.href = auth_adress;
+    fetch(auth_adress+"/logout").then(response => {
+        if (response.status != 200) {
+            console.log("Erreur lors de la déconnexion");
+        }else{
+            console.log("Déconnexion réussie");
+            document.location.href = auth_adress + "/";
+        }
     });
 }
 
