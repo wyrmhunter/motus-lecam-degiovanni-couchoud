@@ -15,36 +15,19 @@ Le but du projet est de créer une application Motus fonctionnelle, avec :
 - un système de scores,
 - un système d'authentification.
 
-**Technologies utilisées**
-
-* **Langage de programmation:** Python
-* **Framework:** Flask
-* **Base de données:** SQLite
-* **Outils de test:** Unittests
-
-**Fonctionnalités**
-
-Le micro-service offre les fonctionnalités suivantes :
-
-* **Génération d'un mot aléatoire:** Le micro-service peut générer un mot aléatoire à partir d'une liste de mots prédéfinis.
-* **Vérification des propositions:** Le micro-service peut vérifier si une proposition correspond au mot secret.
-* **Gestion des parties:** Le micro-service peut gérer les parties en cours, en stockant le nombre de tentatives et les lettres déjà proposées.
-
 **Architecture**
 
-Le micro-service est composé de plusieurs modules :
+L'application Motus possède l'architecture suivante :
+- Le frontend constitué d'un site web avec lequel l'utilisateur va pouvoir envoyer des requêtes
+- Dans le backend, les trois serveurs Jeu, Authentification et Score vont recevoir les requêtes de l'utilisateur. Les serveurs Authentification et Score communiquent avec leurs bases de données Redis respectives.
 
-* **Module API:** Ce module expose les API RESTful pour les différentes fonctionnalités du jeu.
-* **Module logique:** Ce module contient la logique du jeu, y compris la génération du mot aléatoire, la vérification des propositions et la gestion des parties.
-* **Module base de données:** Ce module gère l'accès à la base de données SQLite.
+![alt text](./img/architecture.png)
 
-**Tests**
+**Description des services**
 
-Le micro-service est accompagné d'une série de tests unitaires qui permettent de vérifier son fonctionnement.
+Pour s'authentifier, l'utilisateur va envoyer ses identifiants au Serveur Authentification avec la route /login. Ce dernier va renvoyer un token (code d'autorisation), que le client va envoyer au Serveur Jeu avec la route /game?token=xxxx. Le Serveur Jeu va envoyer une demande de vérification au Serveur Authentification avec la route /token. Si le token est correct, le Serveur Authentification va envoyer le username du joueur au Serveur Jeu, puis ce dernier va finalement envoyer au client l'autorisation de jouer. Si le token est incorrect, le Serveur Jeu va recevoir du Serveur Authentification l'information que le token est incorrect et va ensuite envoyer une nouvelle demande de login au client.
 
-**Déploiement**
-
-Le micro-service peut être déployé sur n'importe quel serveur web compatible avec Python et Flask.
+![alt text](./img/authentification.png)
 
 **Remerciements**
 
