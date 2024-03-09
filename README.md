@@ -9,7 +9,7 @@ Dans le cadre :
 
 **Description du projet**
 
-Ce projet implémente le jeu de motus en tant que micro-service. Il s'agit d'un projet pédagogique réalisé dans le cadre d'un cours sur les micro-services.
+Ce projet implémente le jeu de Motus en tant qu'application orientée microservices. Il s'agit d'un projet pédagogique réalisé dans le cadre d'un cours sur les microservices.
 Le but du projet est de créer une application Motus fonctionnelle, avec : 
 - ses parties front/back,
 - un système de scores,
@@ -20,7 +20,7 @@ Le but du projet est de créer une application Motus fonctionnelle, avec :
 Voici les étapes à suivre pour installer et lancer l'application :
 - Cloner le repo Git
 - Se placer dans le dossier motus-lecam-degiovanni-couchoud/src
-- Effectuer un docker compose pour lancer les dockers et générer toute l'architecture micro-service
+- Effectuer un docker compose pour lancer les dockers et générer toute l'architecture de microservices
 - Lancer la page http://localhost:5001 pour s'authentifier
 
 **Architecture**
@@ -31,7 +31,7 @@ L'application Motus possède l'architecture suivante :
 
 ![alt text](./img/architecture.png)
 
-**Description des services**
+**Fonctionnement des requêtes entre les différents services**
 
 Pour s'authentifier, l'utilisateur va envoyer ses identifiants au Serveur Authentification avec la route /login. Ce dernier va renvoyer un token (code d'autorisation), que le client va envoyer au Serveur Jeu avec la route /game?token=xxxx. Le Serveur Jeu va envoyer une demande de vérification au Serveur Authentification avec la route /token. Si le token est correct, le Serveur Authentification va envoyer le username du joueur au Serveur Jeu, puis ce dernier va finalement envoyer au client l'autorisation de jouer. Si le token est incorrect, le Serveur Jeu va recevoir du Serveur Authentification l'information que le token est incorrect et va ensuite envoyer une nouvelle demande de login au client.
 
@@ -40,7 +40,7 @@ Pour s'authentifier, l'utilisateur va envoyer ses identifiants au Serveur Authen
 Une fois l'utilisateur connecté, le client va effectuer une requête au Serveur Jeu pour obtenir le mot du jour avec la route /word. Le Serveur Jeu va ainsi envoyer le nombres de lettres et la première lettre du mot. Pour rafraîchir le score du joueur, le client envoie interroge le Serveur Jeu avec la route /myscore. Ce dernier envoie ensuite le username du joueur au Serveur Score via la route /getscore?username=xxxx. Le score du joueur est ensuite renvoyé au Serveur Jeu, puis au joueur.
 La boucle du jeu Motus se déroule de la manière suivante :
 - En début d'itération, l'utilisateur propose un mot qui est envoyé au Serveur Jeu avec la route /validate.
-- A chaque itération, on teste si le joueur a gagné ou s'il ne dispose plus d'essais. Dans un de ces deux cas, le Servuer Jeu envoie alors le nombre d'essais et l'état du jeu (victoire ou défaite du joueur) au Serveur Score avec la route /setscore. Le score du joueur est ensuite renvoyé au Serveur Jeu puis au client.
+- A chaque itération, on teste si le joueur a gagné ou s'il ne dispose plus d'essais. Dans un de ces deux cas, le ServeuSr Jeu envoie alors le nombre d'essais et l'état du jeu (victoire ou défaite du joueur) au Serveur Score avec la route /setscore. Le score du joueur est ensuite renvoyé au Serveur Jeu puis au client.
 - En fin d'itération, le Serveur Jeu envoie les lettres bien ou mal placées, le nombre d'essais restants ainsi que le booléen qui indique si le mot proposé par le joueur correspond au mot du jour ou non.
 
 ![alt text](./img/motus_game_and_score.png)
@@ -50,6 +50,12 @@ Si l'utilisateur souhaite se déconnecter, on envoie une requête de déconnexio
 ![alt text](./img/deconnexion.png)
 
 **Points à améliorer et lacunes**
+
+Les fonctionnalités suivantes n'ont pas été implémentées :
+- Mise en place d'un HA PROXY
+- Monitoring : système de logs et de métriques (Grafana Loki, Promoetheus)
+- Microservice Openid
+- Implémentation d'une API  sur le serveur Authentification qui génère un token au format JSON Web Token (JWT)
 
 **Remerciements**
 
