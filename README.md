@@ -23,6 +23,14 @@ Voici les étapes à suivre pour installer et lancer l'application :
 - Effectuer un docker compose pour lancer les dockers et générer toute l'architecture de microservices
 - Lancer la page http://localhost:5001 pour s'authentifier
 
+**Utilisation de l'application**
+
+La première page, celle à laquelle correspond http://localhost:5001, est la page d'inscription.
+
+![alt text](./img/inscription.png)
+
+
+
 **Architecture**
 
 L'application Motus possède l'architecture suivante :
