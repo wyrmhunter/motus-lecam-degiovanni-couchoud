@@ -26,8 +26,12 @@ Voici les étapes à suivre pour installer et lancer l'application :
 **Utilisation de l'application**
 
 La première page, celle à laquelle correspond http://localhost:5001, est la page d'inscription.
-
+### Cas 1 : Nouvel utilisateur
 ![alt text](./img/inscription.png)
+
+### Cas 2 : Connexion à un tilisateur existant
+![alt text](./img/connexion.png)
+
 
 
 
