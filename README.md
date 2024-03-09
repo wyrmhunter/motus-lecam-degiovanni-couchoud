@@ -17,6 +17,17 @@ Ce projet implémente le jeu de Motus avec une architecture orientée microservi
 **Préréquis**
 - Docker installé.
 
+**Technologies utilisées**
+- front-end :
+    - html
+    - js
+    - css
+- back-end :
+    - nodejs, express (services)
+    - redis (bases de données)
+- déploiement :
+    - docker
+
 ## Installation
 
 Voici les étapes à suivre pour installer et lancer l'application :
