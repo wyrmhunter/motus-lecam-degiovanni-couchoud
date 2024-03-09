@@ -15,6 +15,14 @@ Le but du projet est de créer une application Motus fonctionnelle, avec :
 - un système de scores,
 - un système d'authentification.
 
+**Installation**
+
+Voici les étapes à suivre pour installer et lancer l'application :
+- Cloner le repo Git
+- Se placer dans le dossier motus-lecam-degiovanni-couchoud/src
+- Effectuer un docker compose pour lancer les dockers et générer toute l'architecture micro-service
+- Lancer la page http://localhost:5001 pour s'authentifier
+
 **Architecture**
 
 L'application Motus possède l'architecture suivante :
@@ -40,6 +48,8 @@ La boucle du jeu Motus se déroule de la manière suivante :
 Si l'utilisateur souhaite se déconnecter, on envoie une requête de déconnexion au Serveur Jeu avec la route /logout. Ce dernier envoie alors le token sauvegardé dans la session au Serveur Authentification avec la route /logout?token=xxxx. Le serveur Authentification notifie ensuite le serveur Jeu de la suppression du token (statut 200). Enfin, le serveur Jeu retourne la réussite de la déconnexion au client qui renvoie l'utilisateur sur la page d'authentification.
 
 ![alt text](./img/deconnexion.png)
+
+**Points à améliorer et lacunes**
 
 **Remerciements**
 
