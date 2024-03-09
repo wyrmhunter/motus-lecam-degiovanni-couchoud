@@ -122,6 +122,8 @@ Les fonctionnalités suivantes n'ont pas été implémentées/implémentées par
 - [Manquant] Authentification utilisant OpenID non implémentée,
 - [Implémentation partielle] Utilisation d'un token au format JSON Web Token (JWT) pour l'authentification non implémentée :
     - En l'état actuel, l'application utilise une chaîne de caractères générée aléatoirement (méthode `generateToken()` dans `src/auth/auth.js`) pour le code d'autorisation passé dans l'URL avec la route `/game?token=xxxx`.
+- [Amélioration] Ajout d'une page de score affichant les scores de tous les utilisateurs inscrits,
+- [Amélioration] Utilisation plus raisonnée/suivant la norme des status (200, 401, 404...) dans les réponses données à des requêtes.
 
 ## Remerciements
 
