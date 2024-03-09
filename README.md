@@ -27,6 +27,10 @@ Voici les étapes à suivre pour installer et lancer l'application :
     2. ou directement `docker-compose up`.
 - Une fois la génération de l'architecture terminée, allez à l'adresse http://localhost:5001 pour accéder à l'application.
 
+**Autres commandes**
+- Pour éteindre et relancer l'application : `docker-compose restart`,
+- Pour éteindre l'application : `docker-compose down`
+
 ## Utiliser l'application
 
 La première page, celle à laquelle correspond http://localhost:5001, est la page d'inscription.
