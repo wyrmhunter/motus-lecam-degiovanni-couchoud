@@ -55,7 +55,7 @@ Les fonctionnalités suivantes n'ont pas été implémentées :
 - Mise en place d'un HA PROXY
 - Monitoring : système de logs et de métriques (Grafana Loki, Promoetheus)
 - Microservice Openid
-- Implémentation d'une API  sur le serveur Authentification qui génère un token au format JSON Web Token (JWT)
+- Utilisation d'un token au format JSON Web Token (JWT) pour l'authentification. En l'état actuel, l'application utilise une chaîne de caractères pour le code d'autorisation qui est ensuite passée dans l'URL avec la route /game?token=xxxx.
 
 **Remerciements**
 
