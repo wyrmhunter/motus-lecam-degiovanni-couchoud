@@ -32,8 +32,20 @@ La première page, celle à laquelle correspond http://localhost:5001, est la pa
 ### Cas 2 : Connexion à un tilisateur existant
 ![alt text](./img/connexion.png)
 
+### Après connexion : Page de jeu
+![alt text](./img/page_jeu.png)
 
+### Grille du Motus
+![alt text](./img/grille_jeu.png)
 
+### Bouton "Proposer"
+![alt text](./img/input_proposer.png)
+
+### Affichage du score du joueur
+![alt text](./img/affichage_score.png)
+
+### Bouton "Se déconnecter"
+![alt text](./img/bouton_deconnexion.png)
 
 **Architecture**
 
