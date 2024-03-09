@@ -92,7 +92,7 @@ L'application Motus possède l'architecture suivante :
 ## Interactions entre services
 ### Authentification
 
-Pour s'authentifier, l'utilisateur va envoyer ses identifiants au Serveur Authentification avec la route `/login`. Ce dernier va renvoyer un token (code d'autorisation), que le client va envoyer au Serveur Jeu avec la route ``/gametoken=xxxx`.\
+Pour s'authentifier, l'utilisateur va envoyer ses identifiants au Serveur Authentification avec la route `/login`. Ce dernier va renvoyer un token (code d'autorisation), que le client va envoyer au Serveur Jeu avec la route `/gametoken=xxxx`.\
 Le Serveur Jeu va envoyer une demande de vérification au Serveur Authentification avec la route `/token`. Si le token est correct, le Serveur Authentification va envoyer le username du joueur au Serveur Jeu, puis ce dernier va finalement envoyer au client l'autorisation de jouer. Si le token est incorrect, le Serveur Jeu va recevoir du Serveur Authentification l'information que le token est incorrect et va ensuite envoyer une nouvelle demande de login au client.
 
 ![alt text](./img/authentification.png)
