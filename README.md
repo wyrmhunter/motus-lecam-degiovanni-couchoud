@@ -52,6 +52,7 @@ Si l'utilisateur souhaite se déconnecter, on envoie une requête de déconnexio
 **Points à améliorer et lacunes**
 
 Les fonctionnalités suivantes n'ont pas été implémentées :
+- Amélioration du service d'authentification : en l'état actuel, l'utilisateur doit s'inscrire PUIS se login pour accéder au jeu. Une piste d'amélioration serait de faire en sorte que l'utilisateur soit redirigé directement vers la page de jeu après s'être inscrit.
 - Mise en place d'un HA PROXY
 - Monitoring : système de logs et de métriques (Grafana Loki, Promoetheus)
 - Microservice Openid
