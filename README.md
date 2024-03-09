@@ -29,7 +29,7 @@ La première page, celle à laquelle correspond http://localhost:5001, est la pa
 ### Cas 1 : Nouvel utilisateur
 ![alt text](./img/inscription.png)
 
-### Cas 2 : Connexion à un tilisateur existant
+### Cas 2 : Connexion à un utilisateur existant
 ![alt text](./img/connexion.png)
 
 ### Après connexion : Page de jeu
