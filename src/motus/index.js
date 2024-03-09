@@ -7,10 +7,10 @@ const session = require('express-session')
 
 //Définition du port sur lequel lancer l'application 
 const port = process.env.PORT || 3001;
-const auth_adress = "http://localhost:5001";
-const score_adress = "http://localhost:4001";
+const auth_adress = "http://auth_service:5001";
+const score_adress = "http://score_service:4001";
 
-const allowedOrigins = ['http://localhost:3001', 'http://localhost:5001', 'http://localhost:5001/', 'http://localhost:4001']; 
+const allowedOrigins = ['http://game_service:3001', 'http://auth_service:5001', 'http://score_service:4001']; 
 const corsOptions = {
   origin: allowedOrigins, 
   credentials: true, 
@@ -78,10 +78,23 @@ app.get('/word', (req, res) => {
   res.send(wordLength().toString());
 })
 
+app.get('/', (req, res) => {
+  //On redirige vers le serveur d'authentification
+  console.log("Redirecting to auth service");
+  res.redirect(auth_adress);
+});
+
+
 //sur la route /, on récupère le token passé dans l'url
 app.get('/game', (req, res) => {
   console.log("Getting token");
   let token = req.query.token;
+  console.log(req.query.token);
+  if (token == undefined) {
+    console.log("Redirecting to auth service");
+    res.status(401).redirect(auth_adress);
+    return;
+  }
   req.session.actoken = token;
   req.session.save();
   console.log('Token is : '+token);
@@ -101,6 +114,8 @@ app.get('/game', (req, res) => {
   });
   
 })
+
+
 
 
 //sur /validate?word=<MOT>, on reçoit le mot proposé par le joueur et on le compare au mot du jour
@@ -148,7 +163,7 @@ app.post('/validate', async (req, res) => {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({username: username,tries: tries})
+        body: JSON.stringify({username: username,tries: remaining})
       }).then(response => {
         if (response.status != 200) {
             console.log("Erreur lors de l'envoi du score");
@@ -182,10 +197,22 @@ app.get('/port', (req, res) => {
 //route score pour passer le username du joueur dans l'url
 app.get('/myscore', (req, res) => {
   console.log("Getting score for : "+req.session.username);
+  if(req.session.username==undefined){
+    console.log("No user connected");
+    res.status(401).send("No user connected");
+    return;
+  }
   //On demande au serveur score.js d'appeler /getscore avec le username du joueur
-  score = res.redirect(score_adress+"/getscore?username="+req.session.username);
-  //on récupère la réponse du serveur score.js
-  res.send(score);
+  fetch(score_adress+"/getscore?username="+req.session.username).then(async response => {
+    if (response.status != 200) {
+      console.log("Erreur lors de la récupération du score");
+      res.status(500).send("Erreur lors de la récupération du score");
+    }else{
+      let score = await response.text();
+      console.log(req.session.username+" score is : "+score);
+      res.send(score);
+    }
+  });
 })
 
 //route /logout qui va envoyer le token a supprimer au serveur d'authentification
@@ -198,6 +225,8 @@ app.get('/logout', (req, res) => {
       console.log("Erreur lors de la déconnexion");
       res.status(500).send("Erreur lors de la déconnexion");
     }else{
+      //On détruit la session
+      req.session.destroy();
       console.log("Déconnexion réussie");
       res.send("Déconnexion réussie");
     }

@@ -15,6 +15,14 @@ services:
     ports:
       - "6379:6379"
 
+  auth_service:
+    container_name: auth_service
+    build: ./auth
+    ports:
+      - "5001:5001"
+    depends_on:
+      - redis_auth
+
   redis_score:
     image: redis
     container_name: redis_score
@@ -27,15 +35,16 @@ services:
   score_service:
     container_name: score_service
     build: ./score
-
-  auth_service:
-    container_name: score_service
-    build: ./auth
+    ports:
+      - "4001:4001"
+    depends_on:
+      - redis_score
 
   game_service:
-    container_name: score_service
+    container_name: game_service
     build: ./motus
-
+    ports:
+      - "3001:3001"
 
 
 

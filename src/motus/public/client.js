@@ -1,8 +1,4 @@
-/*
-if (document.cookie.indexOf("essais") == -1) {
-    document.cookie = "essais=5";
-}
-*/
+
 const adresse = "http://localhost:3001";
 const auth_adress = "http://localhost:5001";
 const score_adress = "http://localhost:4001";
@@ -17,12 +13,12 @@ document.getElementById("logout-button").classList.add("hide");
 const myavg = document.getElementById('my-avg');
 const myfound = document.getElementById('my-found');
 
-
+const welcome = document.getElementById('username_show');
 
 
 
 //On appelle la route /word de notre serveur pour avoir le nombre de lettres et la première lettre du mot
-fetch(adresse + "/word").then(response => response.text()).then(data => {
+fetch("/word").then(response => response.text()).then(data => {
     //console.log(data);
     //On tranforme le résultat en tableau
     data = data.split(",");
@@ -37,15 +33,25 @@ fetch(adresse + "/word").then(response => response.text()).then(data => {
     CreateTable(length);
 });
 
-//On appelle la route /getscore de notre serveur pour avoir le score du joueur
-fetch("/myscore").then(response => response.text()).then(data => {
-    data = JSON.parse(data);
-    console.log(data);
-    //On ajoute les score dans myavg et myfound
-    myavg.innerHTML = data['avg_try'];
-    myfound.innerHTML = data['found'];
+//On appelle la route /myscore de notre serveur qui elle-même appelle la route /getscore du serveur de scores pour avoir le score du joueur
+function getScore(){
+    fetch("/myscore").then(async response => {
+        //On récupère le statut de la réponse
+        if (response.status == 401) {
+            //On redirige vers la page de connexion
+            document.location.href = auth_adress;
+            return;
+        }
+        
+        data = JSON.parse(await response.text());
+        console.log(data);
+        //On ajoute les score dans myavg et myfound
+        myavg.innerHTML = data['avg_try'];
+        myfound.innerHTML = data['found'];
 
-});
+    });
+}
+getScore();
 
 function CreateTable( length){
     //Dans la table de classe "motus-table", on créé 5 lignes de 'length' cases
@@ -107,7 +113,7 @@ function sendWord() {
     
     //On post le mot 
     //On post les données de connexion au serveur
-    fetch(adresse + '/validate', {
+    fetch('/validate', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -168,14 +174,7 @@ function sendWord() {
             notif_area.innerHTML = "Bravo, vous avez gagné !";
             won = true;
             //On appelle la route /getscore de notre serveur pour avoir le score du joueur
-            fetch("/myscore").then(response => response.text()).then(data => {
-                data = JSON.parse(data);
-                console.log(data);
-                //On ajoute les score dans myavg et myfound
-                myavg.innerHTML = data['avg_try'];
-                myfound.innerHTML = data['found'];
-
-            });
+            getScore();
             return;
         }
 
@@ -197,14 +196,8 @@ function sendWord() {
             notif_area.classList.add("notif-bad");
             notif_area.innerHTML = "Nombre d'essais épuisé, réessayez demain !";
             //On appelle la route /getscore de notre serveur pour avoir le score du joueur
-            fetch("/myscore").then(response => response.text()).then(data => {
-                data = JSON.parse(data);
-                console.log(data);
-                //On ajoute les score dans myavg et myfound
-                myavg.innerHTML = data['avg_try'];
-                myfound.innerHTML = data['found'];
-
-            });
+            getScore();
+            return;
         }
     });
 
@@ -222,15 +215,3 @@ function logout(){
         }
     });
 }
-function scores(){
-    //On appelle la route /score 
-    fetch('/score').then(response => {
-        if (response.status != 200) {
-            console.log("Erreur lors de la récupération des scores");
-        }else{
-            console.log("Scores récupérés");
-            document.location.href = score_adress;
-        }
-    });
-}
-

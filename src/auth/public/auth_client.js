@@ -43,7 +43,7 @@ function login() {
     document.getElementById('username').value = '';
     document.getElementById('password').value = '';
     //On post les données de connexion au serveur
-    fetch(adresse + '/login', {
+    fetch('/login', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -90,7 +90,7 @@ function register() {
     document.getElementById('newPassword').value = '';
 
     //On post les données d'inscription au serveur
-    fetch(adresse + '/register', {
+    fetch('/register', {
         method: 'POST',
         credentials: 'include',
         headers: {

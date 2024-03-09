@@ -7,8 +7,7 @@ const redis = require('redis');
 //Définition du port sur lequel lancer l'application 
 const port = process.env.PORT || 5001;
 
-const allowedOrigins = ['http://localhost:3001', 'http://localhost:5001', 'http://localhost:5001/', 'http://localhost:4001']; 
-const auth_adress = "http://localhost:5001";
+const allowedOrigins = ['http://game_service:3001', 'http://auth_service:5001', 'http://score_service:4001']; 
 const corsOptions = {
   origin: allowedOrigins, 
   credentials: true, 
@@ -24,8 +23,10 @@ app.use(express.static('public'));
 
 //On contacte le conteneur REDIS
 const client = redis.createClient({
-  host: '0.0.0.0', //redis_auth 
-  port: 6379,      
+  socket :{
+    host: 'redis_auth', //redis_auth 
+    port: 6379
+  }
 });
 (async () => {
   //On attend que la connexion soit établie
@@ -84,33 +85,23 @@ app.listen(port, () => {
 
 
 // Route pour s'enregistrer
-app.post('/register', (req, res) => {
-    //On récupère le json
-    let body = '';
-    req.on('data', chunk => {
-        body += chunk.toString();
-    });
+app.post('/register', async (req, res) => {
+    //On récupère le json de la requête POST
+    let user = req.body;
+    console.log(user);
     console.log("Registering user");
-    req.on('end', async () => {
-        //On parse le json
-        let user = JSON.parse(body);
-        console.log(user);
+    let userExists = await client.exists ('user-'+ user.username);
+    console.log(userExists);
+    if (userExists == 1) {
+      console.log("User already exists");
+        res.status(409).send("User already exists");
+        return;
+    } 
+    await client.hSet('user-'+user.username, 'password', user.password);
+    console.log("User created");
+    res.send(201,"User created");
         
-        let userExists = await client.exists ('user-'+ user.username);
-        console.log(userExists);
-        if (userExists == 1) {
-          console.log("User already exists");
-            res.status(409).send("User already exists");
-        } else {
-            await client.hSet('user-'+user.username, 'password', user.password)
-            .then(async () => {
-              console.log("User created");
-              await client.hSet('score-'+ user.username, 'avg_try', 0);
-              await client.hSet('score-'+ user.username,'found',0);
-              res.send(201,"User created")
-            });
-        }
-    });
+   
 });
 
 //Token generation

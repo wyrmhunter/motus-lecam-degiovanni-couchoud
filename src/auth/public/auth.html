@@ -18,30 +18,30 @@
   </div>
   <p class="motus-notif" id="notif-area"></p>
   <div class="main-centered">
-    <div id="loginForm" class="form">
+    <div id="loginForm" class="form hide">
       <h2>Connexion</h2>
       <form id="login">
         <label for="username">Nom d'utilisateur</label>
-        <input type="text" id="username" name="username" required>
+        <input type="text" id="username" name="username" required class="form-input" placeholder="Nom d'utilisateur">
         <label for="password">Mot de passe</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password" required class="form-input" placeholder="Mot de passe">
         <button class="form-submit" onclick="login()">Se connecter</button>
       </form>
-      <p>Pas encore de compte ? <button id="showRegisterForm">Inscrivez-vous</button></p>
+      <p>Pas encore de compte ? <button class="form-submit" id="showRegisterForm">Inscrivez-vous</button></p>
     </div>
 
 
     
-    <div id="registerForm" class="form hide">
+    <div id="registerForm" class="form">
       <h2>Inscription</h2>
       <form id="register">
         <label for="newUsername">Nouveau nom d'utilisateur</label>
-        <input type="text" id="newUsername" name="newUsername" required>
+        <input type="text" id="newUsername" name="newUsername" required class="form-input" placeholder="Nom d'utilisateur">
         <label for="newPassword">Nouveau mot de passe</label>
-        <input type="password" id="newPassword" name="newPassword" required>
+        <input type="password" id="newPassword" name="newPassword" required class="form-input" placeholder="Mot de passe"> 
         <button class="form-submit" onclick="register()">S'inscrire</button>
       </form>
-      <p>Déjà un compte ? <button id="showLoginForm">Connectez-vous</button></p>
+      <p>Déjà un compte ? <button class="form-submit" id="showLoginForm">Connectez-vous</button></p>
     </div>
   </div>  
 

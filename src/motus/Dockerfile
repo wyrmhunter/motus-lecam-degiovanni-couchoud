@@ -2,13 +2,12 @@ FROM node:lts
 
 WORKDIR /app
 
-COPY package.json requirements.txt ./
-
-RUN npm install
+COPY package*.json ./
+RUN npm install 
 
 COPY public ./public
-COPY data ./data
 
-COPY index.js ./
+COPY . .
+EXPOSE 8080
 
-RUN npm run start &
+CMD ["npm", "start"]

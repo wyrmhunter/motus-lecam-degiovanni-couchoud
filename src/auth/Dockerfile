@@ -2,12 +2,11 @@ FROM node:lts
 
 WORKDIR /app
 
-COPY package.json requirements.txt ./
-
-RUN npm install
+COPY ./package.json ./
+RUN npm install --production
 
 COPY public ./public
 
 COPY auth.js ./
 
-RUN npm run start &
+CMD ["node", "auth.js"]

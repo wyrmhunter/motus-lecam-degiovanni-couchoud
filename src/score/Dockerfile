@@ -2,12 +2,11 @@ FROM node:lts
 
 WORKDIR /app
 
-COPY package.json requirements.txt ./
-
-RUN npm install
+COPY ./package.json ./
+RUN npm install 
 
 COPY public ./public
 
 COPY score.js ./
 
-RUN npm run start &
+CMD ["node", "score.js"]
