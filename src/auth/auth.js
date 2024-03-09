@@ -97,6 +97,13 @@ app.post('/register', async (req, res) => {
         res.status(409).send("User already exists");
         return;
     } 
+
+    //si le mdp est de taille 0, on renvoie une erreur
+    if (user.password.length == 0 || user.password == '') {
+      console.log("Password too short");
+      res.status(400).send("Password too short");
+      return;
+    }
     await client.hSet('user-'+user.username, 'password', user.password);
     console.log("User created");
     res.send(201,"User created");
